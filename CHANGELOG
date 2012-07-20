@@ -1,0 +1,18 @@
+1.03
+	after saving we do not mv the tmp file but copying
+	it, because mv sometimes doesn't work with files the
+	current user is not the owner but has write permissions
+	while cp works on such files. so now we cp and unlink
+	the tmpfile after saving.
+
+1.02
+	doc fix in ::Record (group separator is . not /)
+	added Shell.pm to Makefile.PL dependencies
+
+
+1.01
+	bug fix in t/run.t
+
+
+1.00
+	initial version
