@@ -22,7 +22,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.03';
+$Crypt::PWSafe3::VERSION = '1.04';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -869,9 +869,6 @@ T. Linden <tlinden@cpan.org>
 Report bugs to
 http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Crypt-PWSafe3.
 
-=head1 VERSION
-
-Crypt::PWSafe3 Version 1.03.
 
 =head1 SEE ALSO
 
@@ -895,13 +892,17 @@ in this module are his ideas ported to perl.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2012 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE
 
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
+
+=head1 VERSION
+
+Crypt::PWSafe3 Version 1.04.
 
 =cut
 

@@ -9,7 +9,7 @@ my %map2type = %Crypt::PWSafe3::Field::map2type;
 
 my %map2name = %Crypt::PWSafe3::Field::map2name;
 
-$Crypt::PWSafe3::Record::VERSION = '1.02';
+$Crypt::PWSafe3::Record::VERSION = '1.03';
 
 foreach my $field (keys %map2type ) {
   eval  qq(
@@ -37,6 +37,9 @@ sub new {
   # just in case this is a record to be filled by the user,
   # initialize it properly
   my $newuuid = $self->genuuid();
+
+  my $time = time;
+
   $self->addfield(new Crypt::PWSafe3::Field(
 					    name  => 'uuid',
 					    raw   => $newuuid,
@@ -44,17 +47,17 @@ sub new {
 
   $self->addfield(new Crypt::PWSafe3::Field(
 					    name  => 'ctime',
-					    value => time,
+					    value => $time,
 					   ));
 
   $self->addfield(new Crypt::PWSafe3::Field(
 					    name  => 'mtime',
-					    value => time
+					    value => $time
 					   ));
   
   $self->addfield(new Crypt::PWSafe3::Field(
 					    name  => 'lastmod',
-					    value => time
+					    value => $time
 					   ));
 
   $self->addfield(new Crypt::PWSafe3::Field(
@@ -72,6 +75,16 @@ sub new {
 					    value => ''
 					   ));
 
+  $self->addfield(new Crypt::PWSafe3::Field(
+					    name  => 'notes',
+					    value => ''
+					   ));
+
+  $self->addfield(new Crypt::PWSafe3::Field(
+					    name  => 'group',
+					    value => ''
+					   ));
+
   return $self;
 }
 
@@ -85,21 +98,24 @@ sub modifyfield {
 					   type => $type,
 					   value => $value
 					  );
+
+    my $time = time;
+
     # we are in fact just overwriting an eventually
     # existing field with a new one, instead of modifying
     # it, so we are using the conversion automatism in
     # Field::new()
     $this->addfield($field);
 
-    # mark the record as modified
+    # mark the field as modified if it's passwd field
     $this->addfield(new Crypt::PWSafe3::Field(
 					      name => 'mtime',
-					      value => time
-					     ));
+					      value => $time
+					     )) if $name eq 'passwd';
 
     $this->addfield(new Crypt::PWSafe3::Field(
 					      name  => "lastmod",
-					      value => time
+					      value => $time
 					     ));
     return $field;
   }
@@ -207,11 +223,11 @@ you mind, do it yourself.
 
 =head2 B<mtime([time_t])>
 
-Returns the modification time without argument. Sets the modification time
+Returns the modification time of the passwd field without argument. Sets the modification time
 if an argument is given. Argument must be an integer timestamp
 as returned by L<time()>.
 
-This will be generated automatically for modified records, so you
+This will be generated automatically for modified records if the passwd field changed, so you
 normally don't have to cope with.
 
 =head2 B<lastmod([string])>
@@ -222,9 +238,6 @@ as returned by L<time()>.
 
 This will be generated automatically for modified records, so you
 normally don't have to cope with.
-
-I<Note: I don't really know, what's the difference to mtime,
-so, I update both. If someone knows better, please tell me.>
 
 =head2 B<url([string])>
 
@@ -283,7 +296,7 @@ T. Linden <tlinden@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2012 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE

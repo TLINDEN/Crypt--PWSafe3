@@ -1,9 +1,21 @@
+1.04
+
+	fixed rt.cpan.org#75145. uninitialized fields lead to
+        program abort. solved by pre-initializing them in the
+        new records method. types notes and groups affected.
+
+	fixed rt.cpan.org#75146. mtime will only modified if
+	the passwd field changed. POD adjusted. Fix suggested
+	by Luca Filipozzi - thx.
+
+
 1.03
 	after saving we do not mv the tmp file but copying
 	it, because mv sometimes doesn't work with files the
 	current user is not the owner but has write permissions
 	while cp works on such files. so now we cp and unlink
 	the tmpfile after saving.
+
 
 1.02
 	doc fix in ::Record (group separator is . not /)
