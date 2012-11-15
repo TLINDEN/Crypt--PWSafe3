@@ -15,7 +15,7 @@ use Digest::HMAC;
 use Digest::SHA;
 use Crypt::Random qw( makerandom );
 use Data::UUID;
-use File::Copy qw(cp);
+use File::Copy qw(copy move);
 use File::Spec;
 use FileHandle;
 use Data::Dumper;
@@ -375,8 +375,7 @@ sub save {
   }
   else {
     # well, seems to be ok :)
-    cp($tmpfile, $file);
-    unlink $tmpfile;
+    move($tmpfile, $file);
   }
 }
 
