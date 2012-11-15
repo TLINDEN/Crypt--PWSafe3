@@ -15,7 +15,7 @@ use Digest::HMAC;
 use Digest::SHA;
 use Crypt::Random qw( makerandom );
 use Data::UUID;
-use Shell qw(mv cp);
+use File::Copy qw(cp);
 use File::Spec;
 use FileHandle;
 use Data::Dumper;

@@ -1,4 +1,5 @@
-# -*-perl-*-
+#!perl -T
+#
 # testscript for Crypt::PWSafe3 Classes by Thomas Linden
 #
 # needs to be invoked using the command "make test" from
