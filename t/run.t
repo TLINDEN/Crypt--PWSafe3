@@ -1,4 +1,5 @@
-# -*-perl-*-
+#!perl -T
+#
 # testscript for Crypt::PWSafe3 Classes by Thomas Linden
 #
 # needs to be invoked using the command "make test" from
@@ -106,3 +107,8 @@ eval {
   }
 };
 ok(!$@, "modify some header fields ($@)");
+
+### clean temporary files
+unlink('t/3.out');
+unlink('t/4.out');
+unlink('t/5.out');
