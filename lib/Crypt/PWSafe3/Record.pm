@@ -137,7 +137,11 @@ sub addfield {
   #
   # add a field to the record
   my ($this, $field) = @_;
-  $this->{field}->{ $map2name{$field->type} } = $field;
+  my $name = $map2name{$field->type};
+  unless( defined($name) ) {
+      $name = $field->type; # consistent with Field->new
+  }
+  $this->{field}->{ $name } = $field;
 }
 
 =head1 NAME
