@@ -12,6 +12,7 @@ WriteMakefile(
 				  'Crypt::Random'  => 1.25,
 				  'Data::UUID'     => 1.217,
 				  'Shell'          => 0.5,
+                                  'Bytes::Random::Secure' => 0.09,
 				},
 	      'AUTHOR'       => 'Thomas Linden <tlinden@cpan.org>',
 	      'clean'        => {

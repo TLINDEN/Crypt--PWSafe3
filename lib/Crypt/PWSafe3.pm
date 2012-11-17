@@ -621,12 +621,19 @@ sub writebytes {
   }
 }
 
+# This is original, very slow random
+#sub random {
+#  #
+#  # helper, return some secure random bytes
+#  my($this, $len) = @_;
+#  my $bits = makerandom(Size => 256, Strength => 1);
+#  return substr($bits, 0, $len);
+#}
+
+use Bytes::Random::Secure qw(random_bytes random_bytes_hex);
 sub random {
-  #
-  # helper, return some secure random bytes
   my($this, $len) = @_;
-  my $bits = makerandom(Size => 256, Strength => 1);
-  return substr($bits, 0, $len);
+  return random_bytes($len);
 }
 
 sub getheader {
