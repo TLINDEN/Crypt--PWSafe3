@@ -470,6 +470,26 @@ sub modifyrecord {
   $this->markmodified();
 }
 
+sub deleterecord {
+  #
+  # delete a record identified by the given uuid, if present
+  # 
+  # returns 1 if record was actually removed, 0 if it was not present
+  my($this, $uuid) = @_;
+
+  if (! exists $this->{record}->{$uuid}) {
+      return 0;
+  }
+
+  delete $this->{record}->{$uuid};
+
+  # mark vault as modified
+  $this->markmodified();
+
+  return 1;
+}
+
+
 sub markmodified {
   #
   # mark the vault as modified by setting the appropriate header fields
