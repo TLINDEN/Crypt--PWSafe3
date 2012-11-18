@@ -108,6 +108,31 @@ eval {
 };
 ok(!$@, "modify some header fields ($@)");
 
+### 6 delete
+eval {
+  my $vault6 = new Crypt::PWSafe3(file => 't/3.out', password => 'tom');
+  my $uuid      = $vault6->newrecord(user => 'xxx', passwd => 'y');
+  $vault6->save(file=>'t/6.out');
+
+  my $rvault6 = new Crypt::PWSafe3(file => 't/6.out', password => 'tom');
+  my $rec = $rvault6->getrecord($uuid);
+  if ($rec->user ne 'xxx') {
+    die "oop way record change failed";
+  }
+  $rvault6->deleterecord($uuid);
+  if ($rvault6->getrecord($uuid)) {
+      die "deleted record still present in open vault";
+  }
+  $vault6->save(file=>'t/6a.out');
+  
+  my $rvault6a = new Crypt::PWSafe3(file => 't/6a.out', password => 'tom');
+  if ($rvault6->getrecord($uuid)) {
+      die "deleted record reappears after save and reload";
+  }
+};
+ok(!$@, "delete record\n" . $@ . "\n");
+
+
 ### clean temporary files
 unlink('t/3.out');
 unlink('t/4.out');

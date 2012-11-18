@@ -470,6 +470,26 @@ sub modifyrecord {
   $this->markmodified();
 }
 
+sub deleterecord {
+  #
+  # delete a record identified by the given uuid, if present
+  # 
+  # returns 1 if record was actually removed, 0 if it was not present
+  my($this, $uuid) = @_;
+
+  if (! exists $this->{record}->{$uuid}) {
+      return 0;
+  }
+
+  delete $this->{record}->{$uuid};
+
+  # mark vault as modified
+  $this->markmodified();
+
+  return 1;
+}
+
+
 sub markmodified {
   #
   # mark the vault as modified by setting the appropriate header fields
@@ -621,12 +641,19 @@ sub writebytes {
   }
 }
 
+# This is original, very slow random
+#sub random {
+#  #
+#  # helper, return some secure random bytes
+#  my($this, $len) = @_;
+#  my $bits = makerandom(Size => 256, Strength => 1);
+#  return substr($bits, 0, $len);
+#}
+
+use Bytes::Random::Secure qw(random_bytes random_bytes_hex);
 sub random {
-  #
-  # helper, return some secure random bytes
   my($this, $len) = @_;
-  my $bits = makerandom(Size => 256, Strength => 1);
-  return substr($bits, 0, $len);
+  return random_bytes($len);
 }
 
 sub getheader {
