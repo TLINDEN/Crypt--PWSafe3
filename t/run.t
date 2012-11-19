@@ -137,3 +137,5 @@ ok(!$@, "delete record\n" . $@ . "\n");
 unlink('t/3.out');
 unlink('t/4.out');
 unlink('t/5.out');
+unlink('t/6.out');
+unlink('t/6a.out');
