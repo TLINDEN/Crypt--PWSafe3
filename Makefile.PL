@@ -1,6 +1,18 @@
 require 5.004;
 use ExtUtils::MakeMaker;
 
+my %optional = (
+		  'Bytes::Random::Secure' => 0.09,
+		);
+
+foreach my $module (sort keys %optional) {
+  eval "require $module";
+  if ($@) {
+    warn("Optional module $module not installed, $optional{$module}\n");
+  }
+}
+
+
 WriteMakefile(
 	      'NAME'         => 'Crypt::PWSafe3',
 	      'VERSION_FROM' => 'lib/Crypt/PWSafe3.pm',
@@ -12,7 +24,6 @@ WriteMakefile(
 				  'Crypt::Random'  => 1.25,
 				  'Data::UUID'     => 1.217,
 				  'Shell'          => 0.5,
-                                  'Bytes::Random::Secure' => 0.09,
 				},
 	      'AUTHOR'       => 'Thomas Linden <tlinden@cpan.org>',
 	      'clean'        => {
