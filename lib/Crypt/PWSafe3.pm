@@ -34,7 +34,10 @@ use Crypt::PWSafe3::SHA256;
 # install a wrapper closure around the
 # one we found.
 BEGIN {
-  eval { require Bytes::Random::Secure  };
+  eval { 
+      require Bytes::Random::Secure;
+      Bytes::Random::Secure->import("random_bytes");
+  };
   if ($@) {
     # well, didn' work, use slow function
     eval { require Crypt::Random; };# qw( makerandom ); };
