@@ -22,7 +22,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.06';
+$Crypt::PWSafe3::VERSION = '1.07';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -950,7 +950,7 @@ and/or modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.06.
+Crypt::PWSafe3 Version 1.07.
 
 =cut
 

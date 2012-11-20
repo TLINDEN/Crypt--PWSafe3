@@ -1,3 +1,8 @@
+1.07
+	applied patch by  https://github.com/Mekk:
+	https://github.com/TLINDEN/Crypt--PWSafe3/pull/3,
+	fix import of Bytes::Random::Secure.
+
 1.06
 	applied patch by  https://github.com/Mekk:
 	https://github.com/TLINDEN/Crypt--PWSafe3/pull/2,
