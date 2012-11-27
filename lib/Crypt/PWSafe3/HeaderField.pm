@@ -65,13 +65,13 @@ sub new {
 
   if (exists $param{raw}) {
     if ($param{type} == 0x00) {
-       $self->{value} = unpack('H*', $param{raw});# maybe WW  or CC ?
+       $self->{value} = unpack('L<2', $param{raw});# maybe WW  or CC ?
     }
     elsif ($param{type} == 0x01) {
-      $self->{value} = unpack('H*', $param{raw});
+      $self->{value} = unpack('L<4', $param{raw});
     }
     elsif ($param{type} == 0x04) {
-      $self->{value} = unpack('V', $param{raw});
+      $self->{value} = unpack('L<', $param{raw});
     }
     else {
       $self->{value} = $param{raw};
@@ -81,13 +81,13 @@ sub new {
   else {
     if (exists $param{value}) {
       if ($param{type} == 0x00) {
-	$self->{raw} = pack("H*", $param{value});
+	$self->{raw} = pack("L<2", $param{value});
       }
       elsif ($param{type} == 0x01) {
-	$self->{raw} = pack('H*', $param{value});
+	$self->{raw} = pack('L<4', $param{value});
       }
       elsif ($param{type} == 0x04) {
-	$self->{raw} = pack('V', $param{value});
+	$self->{raw} = pack('L<', $param{value});
       }
       else {
 	$self->{raw} = $param{value};

@@ -22,12 +22,14 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.07';
+$Crypt::PWSafe3::VERSION = '1.08';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
 use Crypt::PWSafe3::Record;
 use Crypt::PWSafe3::SHA256;
+
+require 5.10.0;
 
 #
 # check, which random source to use.
@@ -204,7 +206,7 @@ sub read {
   }
 
   $this->salt( $this->readbytes(32) );
-  $this->iter( unpack("V", $this->readbytes(4) ) );
+  $this->iter( unpack("L<", $this->readbytes(4) ) );
 
   $this->strechedpw($this->stretchpw($this->password()));
 
@@ -324,7 +326,7 @@ sub save {
   $this->addheader($whosaved);
 
   my $tmpfile = File::Spec->catfile(File::Spec->tmpdir(),
-				    ".vault-" . unpack("H*", $this->random(16)));
+				    ".vault-" . unpack("L<4", $this->random(16)));
   unlink $tmpfile;
   my $fd = new FileHandle($tmpfile, 'w') or croak "Could not open tmpfile $tmpfile: $!\n";
   $fd->binmode();
@@ -332,7 +334,7 @@ sub save {
 
   $this->writebytes($this->tag);
   $this->writebytes($this->salt);
-  $this->writebytes(pack("V", $this->iter));
+  $this->writebytes(pack("L<", $this->iter));
 
   $this->strechedpw($this->stretchpw($passwd));
 
@@ -423,7 +425,7 @@ sub writefield {
     return;
   }
 
-  my $len  = pack("V", $field->len);
+  my $len  = pack("L<", $field->len);
   my $type = pack("C", $field->type);
   my $raw  = $field->raw;
 
@@ -585,7 +587,7 @@ sub readfield {
 
   #print "clear: <" . unpack('H*', $data) . ">\n";
 
-  my $len  = unpack("V", substr($data, 0, 4));
+  my $len  = unpack("L<", substr($data, 0, 4));
   my $type = unpack("C", substr($data, 4, 1));
   my $raw  = substr($data, 5);
 
@@ -950,7 +952,7 @@ and/or modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.07.
+Crypt::PWSafe3 Version 1.08.
 
 =cut
 

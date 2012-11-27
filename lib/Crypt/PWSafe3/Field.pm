@@ -70,13 +70,13 @@ sub new {
 
   if (exists $param{raw}) {
     if (grep { $_ eq $param{type} } @convtime) {
-      $self->{value} = unpack("V", $param{raw});
+      $self->{value} = unpack("L<", $param{raw});
     }
     elsif (grep { $_ eq $param{type} } @convhex) {
-      $self->{value} = unpack('H*', $param{raw});
+      $self->{value} = unpack('L<4', $param{raw});
     }
     elsif (grep { $_ eq $param{type} } @convbyte) {
-      $self->{value} = unpack('W*', $param{raw});
+      $self->{value} = unpack('W<*', $param{raw});
     }
     else {
       $self->{value} = $param{raw};
@@ -87,13 +87,13 @@ sub new {
   else {
     if (exists $param{value}) {
       if (grep { $_ eq $param{type} } @convtime) {
-	$self->{raw} = pack("V", $param{value});
+	$self->{raw} = pack("L<", $param{value});
       }
       elsif (grep { $_ eq $param{type} } @convhex) {
-	$self->{raw} = pack('H*', $param{value});
+	$self->{raw} = pack('L<4', $param{value});
       }
       elsif (grep { $_ eq $param{type} } @convbyte) {
-	$self->{raw} = pack('W*', $param{value});
+	$self->{raw} = pack('W<*', $param{value});
       }
       else {
 	$self->{raw} = $param{value};
