@@ -90,7 +90,7 @@ sub new {
 	$self->{raw} = pack("L<", $param{value});
       }
       elsif (grep { $_ eq $param{type} } @convhex) {
-	$self->{raw} = pack('L<4', $param{value});
+	$self->{raw} = pack('H*', $param{value});
       }
       elsif (grep { $_ eq $param{type} } @convbyte) {
 	$self->{raw} = pack('W<*', $param{value});
