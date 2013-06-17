@@ -7,7 +7,7 @@ use Exporter ();
 use vars qw(@ISA @EXPORT);
 use utf8;
 
-$Crypt::PWSafe3::Field::VERSION = '1.01';
+$Crypt::PWSafe3::Field::VERSION = '1.03';
 
 %Crypt::PWSafe3::Field::map2type = (
 		uuid     => 0x01,
@@ -73,7 +73,7 @@ sub new {
       $self->{value} = unpack("L<", $param{raw});
     }
     elsif (grep { $_ eq $param{type} } @convhex) {
-      $self->{value} = unpack('L<4', $param{raw});
+      $self->{value} = unpack('H*', $param{raw});
     }
     elsif (grep { $_ eq $param{type} } @convbyte) {
       $self->{value} = unpack('W<*', $param{raw});

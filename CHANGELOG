@@ -1,3 +1,13 @@
+1.09
+	the unpack() formatstring for the uuid (field 0x01) "L<4" didn't
+	return a hex string, but a number only, which is fine for most
+	cases, but isn't a correct Data::UUID representation. Changed back
+	to "H*".
+
+1.08
+	fixed pack/unpack formats to use strictly little-endian values as required.
+	machine-dependend unpack() formats changed to machine-independend.
+
 1.07
 	applied patch by  https://github.com/Mekk:
 	https://github.com/TLINDEN/Crypt--PWSafe3/pull/3,
