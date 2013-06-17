@@ -1,3 +1,6 @@
+1.10
+	I forgot to fix the pack() format as well.
+
 1.09
 	the unpack() formatstring for the uuid (field 0x01) "L<4" didn't
 	return a hex string, but a number only, which is fine for most
