@@ -17,6 +17,7 @@ use Crypt::Random qw( makerandom );
 use Data::UUID;
 use File::Copy qw(copy move);
 use File::Spec;
+use File::Temp qw(tempdir);
 use FileHandle;
 use Data::Dumper;
 use Exporter ();
@@ -325,9 +326,11 @@ sub save {
   $this->addheader($whatsaved);
   $this->addheader($whosaved);
 
-  my $tmpfile = File::Spec->catfile(File::Spec->tmpdir(),
+  my $tmpdir = tempdir(CLEANUP=>1);
+  my $tmpfile = File::Spec->catfile($tmpdir,
 				    ".vault-" . unpack("L<4", $this->random(16)));
-  unlink $tmpfile;
+  # Untaint $tmpfile, we know it is secure from the way we created it
+  ($tmpfile) = $tmpfile =~ /^(.*)$/; 
   my $fd = new FileHandle($tmpfile, 'w') or croak "Could not open tmpfile $tmpfile: $!\n";
   $fd->binmode();
   $this->{fd} = $fd;
