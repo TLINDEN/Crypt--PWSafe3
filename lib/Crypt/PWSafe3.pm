@@ -294,6 +294,18 @@ sub read {
   $this->{fd}->close();
 }
 
+sub untaint {
+  #
+  # untaint path's
+  my ($this, $path) = @_;
+  if($path =~ /([\w\-\/\\\.:]+\z)/) {
+    return $1;
+  }
+  else {
+   # fail, return unchanged
+   return $path;
+  }
+}
 
 sub save {
   #
@@ -325,8 +337,9 @@ sub save {
   $this->addheader($whatsaved);
   $this->addheader($whosaved);
 
-  my $tmpfile = File::Spec->catfile(File::Spec->tmpdir(),
-				    ".vault-" . unpack("L<4", $this->random(16)));
+  my $tmpfile = $this->untaint(File::Spec->catfile(File::Spec->tmpdir(),
+		               ".vault-" . unpack("L<4", $this->random(16))));
+  
   unlink $tmpfile;
   my $fd = new FileHandle($tmpfile, 'w') or croak "Could not open tmpfile $tmpfile: $!\n";
   $fd->binmode();
