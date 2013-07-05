@@ -1,3 +1,7 @@
+1.12
+	I somehow managed to mangle version numbers of sub modules,
+	now all properly incremented.
+
 1.11
 	fixed:
 	https://github.com/TLINDEN/Crypt--PWSafe3/issues/6

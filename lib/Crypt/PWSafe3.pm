@@ -22,7 +22,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.11';
+$Crypt::PWSafe3::VERSION = '1.12';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
