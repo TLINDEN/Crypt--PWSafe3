@@ -9,7 +9,7 @@ my %map2type = %Crypt::PWSafe3::Field::map2type;
 
 my %map2name = %Crypt::PWSafe3::Field::map2name;
 
-$Crypt::PWSafe3::Record::VERSION = '1.06';
+$Crypt::PWSafe3::Record::VERSION = '1.07';
 
 foreach my $field (keys %map2type ) {
   eval  qq(
@@ -144,6 +144,22 @@ sub addfield {
   $this->{field}->{ $name } = $field;
 }
 
+sub policy {
+  #
+  # return or set a password policy
+  my ($this, $policy) = @_;
+
+  if($policy) {
+    $this->{policy} = $policy;
+    $this->pwpol($policy->encode());
+  }
+  else {
+    $this->{policy} = Crypt::PWSafe3::PasswordPolicy->new(raw => $this->pwpol);
+  }
+
+  return $this->{policy};
+}
+
 =head1 NAME
 
 Crypt::PWSafe3::Record - Represents a Passwordsafe v3 data record
@@ -265,9 +281,18 @@ for more details.
 Returns the password policy without argument. Sets the password policy
 if an argument is given.
 
-B<Crypt::PWSafe3> doesn't update the pwpol field currently. So if
-you mind, do it yourself. Refer to L<Crypt::PWSafe3::Databaseformat>
-for more details.
+This is the raw encoded policy string. If you want to access it, use the
+B<policy()> method, see below.
+
+=head2 B<policy([Crypt::PWSafe3::PasswordPolicy object])>
+
+If called without arguments, returns a Crypt::PWSafe3::PasswordPolicy
+object. See L<Crypt::PWSafe3::PasswordPolicy> for details, how to access
+it.
+
+To modify the password policy, create new Crypt::PWSafe3::PasswordPolicy
+object or modify the existing one and pass it as argument to the
+B<policy> method.
 
 =head2 B<pwexp([string])>
 

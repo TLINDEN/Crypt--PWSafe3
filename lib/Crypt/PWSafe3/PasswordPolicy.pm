@@ -67,6 +67,8 @@ sub new {
 sub decode {
   my($this, $raw) = @_;
 
+  return if $raw eq '';
+
   # expected input: ffffnnnllluuudddsss
 
   # create a 6-elemt array
@@ -136,7 +138,7 @@ Crypt::PWSafe3::PasswordPolicy - represent a passwordsafe v3 passwprd policy ent
  use Crypt::PWSafe3;
  use Crypt::PWSafe3::PasswordPolicy;
  my $record = $vault->getrecord($uuid);
- my $policy = Crypt::PWSafe3::PasswordPolicy->new(raw => $record->pwpol);
+ my $policy = $record->policy;
 
  # print current values
  print Dumper($policy);
@@ -149,7 +151,9 @@ Crypt::PWSafe3::PasswordPolicy - represent a passwordsafe v3 passwprd policy ent
  $policy->MinSymbols(2);
 
  # put back into record
- $record->raw($policy->encode());
+ $record->policy($policy);
+
+ 
 
 =head1 DESCRIPTION
 
