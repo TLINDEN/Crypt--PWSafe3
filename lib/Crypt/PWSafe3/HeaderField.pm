@@ -6,7 +6,7 @@ use Exporter ();
 use vars qw(@ISA @EXPORT);
 use utf8;
 
-$Crypt::PWSafe3::HeaderField::VERSION = '1.01';
+$Crypt::PWSafe3::HeaderField::VERSION = '1.03';
 
 %Crypt::PWSafe3::HeaderField::map2name = (
 	    0x00 => "version",
