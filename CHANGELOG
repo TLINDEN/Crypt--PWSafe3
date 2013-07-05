@@ -12,6 +12,9 @@
 	test database so that it contains the field now, so that
 	a make test catches it.
 
+	fixed cpantester problem with taintmode unlink() call,
+	now $tmpfile is untainted before
+
 1.10
 	I forgot to fix the pack() format as well.
 
