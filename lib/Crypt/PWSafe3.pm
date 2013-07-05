@@ -22,7 +22,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.10';
+$Crypt::PWSafe3::VERSION = '1.11';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -942,7 +942,7 @@ in this module are his ideas ported to perl.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2012 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2013 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE
@@ -952,7 +952,7 @@ and/or modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.10.
+Crypt::PWSafe3 Version 1.11.
 
 =cut
 

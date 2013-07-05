@@ -300,7 +300,7 @@ T. Linden <tlinden@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2012 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2013 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE

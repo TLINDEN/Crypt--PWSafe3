@@ -1,3 +1,17 @@
+1.11
+	fixed:
+	https://github.com/TLINDEN/Crypt--PWSafe3/issues/6
+	https://github.com/TLINDEN/Crypt--PWSafe3/issues/5
+	This was NOT caused by polish characters, but by the
+	password expire field being set (I didn't use it so far
+	and my test database doesn't contain records with this
+	field set). The 'W<*' pack identifier had been used
+	for this field and W doesn't support < indeed. I changed
+	it to use 'S<' now, which is a 2 byte little endian
+	value according to the db-spec. I also edited the
+	test database so that it contains the field now, so that
+	a make test catches it.
+
 1.10
 	I forgot to fix the pack() format as well.
 

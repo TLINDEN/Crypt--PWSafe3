@@ -7,7 +7,7 @@ use Exporter ();
 use vars qw(@ISA @EXPORT);
 use utf8;
 
-$Crypt::PWSafe3::Field::VERSION = '1.03';
+$Crypt::PWSafe3::Field::VERSION = '1.04';
 
 %Crypt::PWSafe3::Field::map2type = (
 		uuid     => 0x01,
@@ -76,11 +76,11 @@ sub new {
       $self->{value} = unpack('H*', $param{raw});
     }
     elsif (grep { $_ eq $param{type} } @convbyte) {
-      $self->{value} = unpack('W<*', $param{raw});
+      $self->{value} = unpack('S<', $param{raw});
     }
     else {
       $self->{value} = $param{raw};
-       utf8::decode($self->{value});
+      utf8::decode($self->{value});
     }
     $self->{len} = length($param{raw});
   }
@@ -93,11 +93,11 @@ sub new {
 	$self->{raw} = pack('H*', $param{value});
       }
       elsif (grep { $_ eq $param{type} } @convbyte) {
-	$self->{raw} = pack('W<*', $param{value});
+	$self->{raw} = pack('S<', $param{value});
       }
       else {
 	$self->{raw} = $param{value};
-	 utf8::encode($param{raw});
+	utf8::encode($param{raw});
       }
     }
     else {
@@ -170,7 +170,7 @@ T. Linden <tlinden@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2013 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE
