@@ -1,3 +1,6 @@
+1.14
+	fixed github#7: added PasswordPolicy.pm to MANIFEST.
+
 1.13
 	added Crypt::PWSafe3::PasswordPolicy submodule, which allows
 	to access the password policy of a PasswordSafe record.
