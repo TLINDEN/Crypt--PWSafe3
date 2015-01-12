@@ -1,4 +1,9 @@
-
+#
+# Copyright (c) 2011-2015 T.Linden <tlinden |AT| cpan.org>.
+# All Rights Reserved. Std. disclaimer applies.
+# Artistic License, same as perl itself. Have fun.
+#
+# Implements:
 # http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
 
 package Crypt::PWSafe3;
@@ -16,13 +21,14 @@ use Digest::SHA;
 use Crypt::Random qw( makerandom );
 use Data::UUID;
 use File::Copy qw(copy move);
-use File::Spec;
+#use File::Spec;
+use File::Temp;
 use FileHandle;
 use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.14';
+$Crypt::PWSafe3::VERSION = '1.15';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -33,11 +39,11 @@ use Crypt::PWSafe3::PasswordPolicy;
 require 5.10.0;
 
 #
-# check, which random source to use.
+# check which random source to use.
 # install a wrapper closure around the
 # one we found.
 BEGIN {
-  eval { 
+  eval {
       require Bytes::Random::Secure;
       Bytes::Random::Secure->import("random_bytes");
   };
@@ -338,12 +344,9 @@ sub save {
   $this->addheader($whatsaved);
   $this->addheader($whosaved);
 
-  my $tmpfile = $this->untaint(File::Spec->catfile(File::Spec->tmpdir(),
-		               ".vault-" . unpack("L<4", $this->random(16))));
-  
-  unlink $tmpfile;
-  my $fd = new FileHandle($tmpfile, 'w') or croak "Could not open tmpfile $tmpfile: $!\n";
-  $fd->binmode();
+  my $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', TMPDIR => 1) or croak "Could not open tmpfile: $!\n";
+  my $tmpfile = "$fd";
+
   $this->{fd} = $fd;
 
   $this->writebytes($this->tag);
@@ -956,7 +959,7 @@ in this module are his ideas ported to perl.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2015 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE
@@ -966,7 +969,7 @@ and/or modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.11.
+Crypt::PWSafe3 Version 1.15.
 
 =cut
 

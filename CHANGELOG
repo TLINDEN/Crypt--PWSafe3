@@ -1,3 +1,7 @@
+1.15
+	fixed github#8, using File::Temp instead of self baked
+	File::Spec.
+
 1.14
 	fixed github#7: added PasswordPolicy.pm to MANIFEST.
 

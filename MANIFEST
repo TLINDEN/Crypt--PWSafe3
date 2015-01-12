@@ -1,4 +1,5 @@
 lib/Crypt/PWSafe3/Databaseformat.pm
+lib/Crypt/PWSafe3/PasswordPolicy.pm
 lib/Crypt/PWSafe3/Field.pm
 lib/Crypt/PWSafe3/HeaderField.pm
 lib/Crypt/PWSafe3/Record.pm

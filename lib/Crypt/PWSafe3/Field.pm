@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2011-2015 T.Linden <tlinden |AT| cpan.org>.
+# All Rights Reserved. Std. disclaimer applies.
+# Artistic License, same as perl itself. Have fun.
+#
 package Crypt::PWSafe3::Field;
 
 
@@ -170,7 +175,7 @@ T. Linden <tlinden@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2015 by T.Linden <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE

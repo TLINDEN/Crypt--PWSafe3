@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2011-2015 T.Linden <tlinden |AT| cpan.org>.
+# All Rights Reserved. Std. disclaimer applies.
+# Artistic License, same as perl itself. Have fun.
+#
+
 require 5.004;
 use ExtUtils::MakeMaker;
 
@@ -24,6 +30,7 @@ WriteMakefile(
 				  'Crypt::Random'  => 1.25,
 				  'Data::UUID'     => 1.217,
 				  'Shell'          => 0.5,
+				  'File::Temp'     => 0,
 				},
 	      'AUTHOR'       => 'Thomas Linden <tlinden@cpan.org>',
 	      'clean'        => {
