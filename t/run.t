@@ -1,12 +1,15 @@
 #!perl -T
 #
-# testscript for Crypt::PWSafe3 Classes by Thomas Linden
+# testscript for Crypt::PWSafe3 Classes by T.v.Dein
 #
 # needs to be invoked using the command "make test" from
 # the Crypt::PWSafe3 source directory.
 #
 # Under normal circumstances every test should succeed.
-
+#
+# Licensed under the terms of the Artistic License 2.0
+# see: http://www.perlfoundation.org/artistic_license_2_0
+#
 
 use Data::Dumper;
 #use Test::More tests => 57;

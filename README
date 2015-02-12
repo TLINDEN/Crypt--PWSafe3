@@ -32,10 +32,13 @@ INSTALLATION
 
 COPYRIGHT
        Crypt::PWSafe3
-           Copyright (c) 2011-2012 by T. Linden <tlinden@cpan.org>
+           Copyright (c) 2011-2015 by T.v.Dein <tlinden@cpan.org>
 
-       This library is free software; you can redistribute it
-       and/or modify it under the same terms as Perl itself.
+LICENSE
+
+       This program is free software; you can redistribute it
+       and/or modify it under the same terms of the Artistic
+       License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 HOMEPAGE
 
@@ -45,9 +48,9 @@ HOMEPAGE
 
 
 AUTHOR
-       T. Linden <tlinden |AT| cpan.org>
+       T.v.Dein <tlinden |AT| cpan.org>
 
 
 VERSION
-        1.15
+        1.16
 

@@ -1,7 +1,8 @@
 #
-# Copyright (c) 2011-2015 T.Linden <tlinden |AT| cpan.org>.
-# All Rights Reserved. Std. disclaimer applies.
-# Artistic License, same as perl itself. Have fun.
+# Copyright (c) 2011-2015 T.v.Dein <tlinden |AT| cpan.org>.
+#
+# Licensed under the terms of the Artistic License 2.0
+# see: http://www.perlfoundation.org/artistic_license_2_0
 #
 package Crypt::PWSafe3::Record;
 
@@ -14,7 +15,7 @@ my %map2type = %Crypt::PWSafe3::Field::map2type;
 
 my %map2name = %Crypt::PWSafe3::Field::map2name;
 
-$Crypt::PWSafe3::Record::VERSION = '1.07';
+$Crypt::PWSafe3::Record::VERSION = '1.08';
 
 foreach my $field (keys %map2type ) {
   eval  qq(
@@ -326,17 +327,18 @@ L<Crypt::PWSafe3>
 
 =head1 AUTHOR
 
-T. Linden <tlinden@cpan.org>
+T.v.Dein <tlinden@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2015 by T.Linden <tlinden@cpan.org>.
+Copyright (c) 2011-2015 by T.v.Dein <tlinden@cpan.org>.
 All rights reserved.
 
 =head1 LICENSE
 
 This program is free software; you can redistribute it
-and/or modify it under the same terms as Perl itself.
+and/or modify it under the same terms of the Artistic
+License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =cut
 

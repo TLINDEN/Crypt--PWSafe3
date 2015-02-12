@@ -1,7 +1,8 @@
 #
-# Copyright (c) 2011-2015 T.Linden <tlinden |AT| cpan.org>.
-# All Rights Reserved. Std. disclaimer applies.
-# Artistic License, same as perl itself. Have fun.
+# Copyright (c) 2011-2015 T.v.Dein <tlinden |AT| cpan.org>.
+#
+# Licensed under the terms of the Artistic License 2.0
+# see: http://www.perlfoundation.org/artistic_license_2_0
 #
 # Implements:
 # http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
@@ -28,7 +29,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.15';
+$Crypt::PWSafe3::VERSION = '1.16';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -929,7 +930,7 @@ how to create new ones
 
 =head1 AUTHOR
 
-T. Linden <tlinden@cpan.org>
+T.v.Dein <tlinden@cpan.org>
 
 =head1 BUGS
 
@@ -959,17 +960,17 @@ in this module are his ideas ported to perl.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2015 by T.Linden <tlinden@cpan.org>.
-All rights reserved.
+Copyright (c) 2011-2015 by T.v.Dein <tlinden@cpan.org>.
 
 =head1 LICENSE
 
 This program is free software; you can redistribute it
-and/or modify it under the same terms as Perl itself.
+and/or modify it under the same terms of the Artistic
+License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.15.
+Crypt::PWSafe3 Version 1.16.
 
 =cut
 
