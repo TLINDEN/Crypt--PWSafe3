@@ -37,6 +37,7 @@ WriteMakefile(
 	      'clean'        => {
 				 FILES                   => 't/*.out *~ */*~ */*/*~ */*/*/*~'
 				},
+		($ExtUtils::MakeMaker::VERSION >= 6.3002 ? ('LICENSE'  => 'perl', ) : ()),
 
 );
 

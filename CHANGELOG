@@ -1,3 +1,6 @@
+NEXT:
+	added license to META
+
 1.16
 	re-licensed from artistic1 to artistic2 in order to be
 	compatible to fedora packaging. no code changes otherwise
