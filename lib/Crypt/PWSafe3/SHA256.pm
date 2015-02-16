@@ -8,7 +8,7 @@
 
 package Crypt::PWSafe3::SHA256;
 
-$Crypt::PWSafe3::SHA256::VERSION = '1.02';
+$Crypt::PWSafe3::SHA256::VERSION = '1.03';
 
 use Digest::SHA;
 
@@ -17,7 +17,7 @@ sub new {
   my $class = ref($this) || $this;
   my $self = { };
   bless($self, $class);
-  my $sha = new Digest::SHA('SHA-256');
+  my $sha = Digest::SHA->new('SHA-256');
   return $sha;
 }
 

@@ -29,7 +29,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.16';
+$Crypt::PWSafe3::VERSION = '1.17';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -92,7 +92,7 @@ sub new {
   # new vault object
   my($this, %param) = @_;
   my $class = ref($this) || $this;
-  my $self = \%param; # file, password, whoami, program
+  my $self = \%param; # file, password, whoami, program, create
   bless($self, $class);
 
   # sanity checks
@@ -108,13 +108,22 @@ sub new {
     croak 'Parameter password is required';
   }
 
+  if (! exists $self->{create}) {
+    $self->{create} = 1;
+  }
+
   if (! exists $self->{file}) {
     $self->{file} = '';
     $self->create();
   }
   else {
-    if (! -s $self->{file}) {
-      $self->create();
+    if (! -s $self->{file} || ! -r $self->{file}) {
+      if ($self->{create}) {
+	$self->create();
+      }
+      else {
+	croak "PWSafe3 file $self->{file} does not exist or is not readable";
+      }
     }
     else {
       $self->read();
@@ -133,7 +142,7 @@ sub stretchpw {
   # algorithm is described here:
   # [KEYSTRETCH Section 4.1] http://www.schneier.com/paper-low-entropy.pdf
   my ($this, $passwd) = @_;
-  my $sha = new Digest::SHA('SHA-256');
+  my $sha = Digest::SHA->new('SHA-256');
   $sha->reset();
   $sha->add( ( $passwd, $this->salt) );
   my $stretched = $sha->digest();
@@ -160,7 +169,7 @@ sub create {
   $this->strechedpw($this->stretchpw($this->password()));
 
   # generate hash of the streched pw
-  my $sha = new Digest::SHA('SHA-256');
+  my $sha = Digest::SHA->new('SHA-256');
   $sha->reset();
   $sha->add( ( $this->strechedpw() ) );
   $this->shaps( $sha->digest() );
@@ -183,17 +192,17 @@ sub create {
   $this->iv( $this->random(16) );
 
   # create hmac'er and cipher for actual encryption
-  $this->{hmacer} = new Digest::HMAC($this->keyl, "Crypt::PWSafe3::SHA256");
-  $this->{cipher} = new Crypt::CBC(
-				   -key    => $this->keyk,
-				   -iv     => $this->iv,
-				   -cipher => 'Twofish',
-				   -header => 'none',
-				   -padding => 'null',
-				   -literal_key => 1,
-				   -keysize => 32,
-				   -blocksize => 16
-				  );
+  $this->{hmacer} = Digest::HMAC->new($this->keyl, "Crypt::PWSafe3::SHA256");
+  $this->{cipher} = Crypt::CBC->new(
+				    -key    => $this->keyk,
+				    -iv     => $this->iv,
+				    -cipher => 'Twofish',
+				    -header => 'none',
+				    -padding => 'null',
+				    -literal_key => 1,
+				    -keysize => 32,
+				    -blocksize => 16
+				   );
 
   # empty for now
   $this->hmac( $this->{hmacer}->digest() );
@@ -204,7 +213,7 @@ sub read {
   # read and decrypt an existing vault file
   my($this) = @_;
 
-  my $fd = new FileHandle($this->file, 'r');
+  my $fd = FileHandle->new($this->file, 'r');
   $fd->binmode();
   $this->{fd} = $fd;
 
@@ -218,13 +227,12 @@ sub read {
 
   $this->strechedpw($this->stretchpw($this->password()));
 
-  my $sha = new Digest::SHA(256);
+  my $sha = Digest::SHA->new(256);
   $sha->reset();
   $sha->add( ( $this->strechedpw() ) );
   $this->shaps( $sha->digest() );
 
   my $fileshaps = $this->readbytes(32);
-  #print "sha1: <" . unpack('H*', $fileshaps) . ">\nsha2: <" . unpack('H*', $this->shaps) . ">\n";
   if ($fileshaps ne $this->shaps) {
     croak "Wrong password!";
   }
@@ -241,14 +249,11 @@ sub read {
   $this->keyk($crypt->decrypt($this->b1) . $crypt->decrypt($this->b2));
   $this->keyl($crypt->decrypt($this->b3) . $crypt->decrypt($this->b4));
 
-  #print "keyk:<" . unpack('H*',  $this->keyk) . ">\n";
-
   $this->iv( $this->readbytes(16) );
 
   # create hmac'er and cipher for actual encryption
-  $this->{hmacer} = new Digest::HMAC($this->keyl, "Crypt::PWSafe3::SHA256");
-  #print "keyk len: " . length($this->keyk) . "\n";
-  $this->{cipher} = new Crypt::CBC(
+  $this->{hmacer} = Digest::HMAC->new($this->keyl, "Crypt::PWSafe3::SHA256");
+  $this->{cipher} = Crypt::CBC->new(
 				   -key    => $this->keyk,
 				   -iv     => $this->iv,
 				   -cipher => 'Twofish',
@@ -274,7 +279,7 @@ sub read {
   }
 
   # read db records
-  my $record = new Crypt::PWSafe3::Record();
+  my $record = Crypt::PWSafe3::Record->new();
   $this->{record} = {};
   while (1) {
     my $field = $this->readfield();
@@ -283,8 +288,7 @@ sub read {
     }
     if ($field->type == 0xff) {
       $this->addrecord($record);
-      #print "--- record added (uuid:" . $record->uuid . ")\n";
-      $record = new Crypt::PWSafe3::Record();
+      $record = Crypt::PWSafe3::Record->new();
     }
     else {
       $record->addfield($field);
@@ -338,14 +342,14 @@ sub save {
     return;
   }
 
-  my $lastsave  = new Crypt::PWSafe3::HeaderField(type => 0x04, value => time);
-  my $whatsaved = new Crypt::PWSafe3::HeaderField(type => 0x06, value => $this->{program});
-  my $whosaved  = new Crypt::PWSafe3::HeaderField(type => 0x05, value => $this->{whoami});
+  my $lastsave  = Crypt::PWSafe3::HeaderField->new(type => 0x04, value => time);
+  my $whatsaved = Crypt::PWSafe3::HeaderField->new(type => 0x06, value => $this->{program});
+  my $whosaved  = Crypt::PWSafe3::HeaderField->new(type => 0x05, value => $this->{whoami});
   $this->addheader($lastsave);
   $this->addheader($whatsaved);
   $this->addheader($whosaved);
 
-  my $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', TMPDIR => 1) or croak "Could not open tmpfile: $!\n";
+  my $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', TMPDIR => 1, EXLOCK => 0) or croak "Could not open tmpfile: $!\n";
   my $tmpfile = "$fd";
 
   $this->{fd} = $fd;
@@ -357,7 +361,7 @@ sub save {
   $this->strechedpw($this->stretchpw($passwd));
 
   # line 472
-  my $sha = new Digest::SHA(256);
+  my $sha = Digest::SHA->new(256);
   $sha->reset();
   $sha->add( ( $this->strechedpw() ) );
   $this->shaps( $sha->digest() );
@@ -377,8 +381,8 @@ sub save {
 
   $this->writebytes($this->iv);
 
-  $this->{hmacer} = new Digest::HMAC($this->keyl, "Crypt::PWSafe3::SHA256");
-  $this->{cipher} = new Crypt::CBC(
+  $this->{hmacer} = Digest::HMAC->new($this->keyl, "Crypt::PWSafe3::SHA256");
+  $this->{cipher} = Crypt::CBC->new(
 				   -key    => $this->keyk,
 				   -iv     => $this->iv,
 				   -cipher => 'Twofish',
@@ -389,7 +393,7 @@ sub save {
 				   -blocksize => 16
 				  );
 
-  my $eof = new Crypt::PWSafe3::HeaderField(type => 0xff, value => '');
+  my $eof = Crypt::PWSafe3::HeaderField->new(type => 0xff, value => '');
 
   foreach my $type (keys %{$this->{header}}) {
     $this->writefield($this->{header}->{$type});
@@ -398,7 +402,7 @@ sub save {
   $this->writefield($eof);
   $this->hmacer($eof->{raw});
 
-  $eof = new Crypt::PWSafe3::Field(type => 0xff, value => '');
+  $eof = Crypt::PWSafe3::Field->new(type => 0xff, value => '');
 
   foreach my $uuid (keys %{$this->{record}}) {
     my $record = $this->{record}->{$uuid};
@@ -410,7 +414,7 @@ sub save {
     $this->hmacer($eof->{raw});
   }
 
-  $this->writefield(new Crypt::PWSafe3::Field(type => 'none', raw => 0));
+  $this->writefield(Crypt::PWSafe3::Field->new(type => 'none', raw => 0));
 
   $this->hmac( $this->{hmacer}->digest() );
   $this->writebytes($this->hmac);
@@ -419,7 +423,7 @@ sub save {
   # now try to read it in again to check if it
   # is valid what we created
   eval {
-    my $vault = new Crypt::PWSafe3(file => $tmpfile, password => $passwd);
+    my $vault = Crypt::PWSafe3->new(file => $tmpfile, create => 0, password => $passwd);
   };
   if ($@) {
     unlink $tmpfile;
@@ -435,8 +439,6 @@ sub writefield {
   #
   # write a field to vault file
   my($this, $field) = @_;
-
-  #print "write field " . $field->name . "\n";
 
   if ($field->type eq 'none') {
     $this->writebytes("PWS3-EOFPWS3-EOF");
@@ -459,19 +461,15 @@ sub writefield {
   if (length($data) > 16) {
     my $crypt;
     while (1) {
-      #print "processing part\n";
       my $part = substr($data, 0, 16);
       $crypt .= $this->encrypt($part);
       if (length($data) <= 16) {
-	#print "  this was the last one\n";
 	last;
       }
       else {
-	#print "  getting next\n";
 	$data = substr($data, 16);
       }
     }
-    #print "  len: " . length($crypt) . "\n";
     $this->writebytes($crypt);
   }
   else {
@@ -525,7 +523,6 @@ sub modifyrecord {
 sub deleterecord {
   #
   # delete a record identified by the given uuid, if present
-  # 
   # returns 1 if record was actually removed, 0 if it was not present
   my($this, $uuid) = @_;
 
@@ -546,14 +543,14 @@ sub markmodified {
   #
   # mark the vault as modified by setting the appropriate header fields
   my($this) = @_;
-  my $lastmod = new Crypt::PWSafe3::HeaderField(
-						name  => "lastsavetime",
-						value => time
+  my $lastmod = Crypt::PWSafe3::HeaderField->new(
+						 name  => "lastsavetime",
+						 value => time
 						);
-  my $who = new Crypt::PWSafe3::HeaderField(
-						name  => "wholastsaved",
-						value => $this->{whoami}
-						);
+  my $who = Crypt::PWSafe3::HeaderField->new(
+					     name  => "wholastsaved",
+					     value => $this->{whoami}
+					    );
   $this->addheader($lastmod);
   $this->addheader($who);
   $this->{modified} = 1;
@@ -563,7 +560,7 @@ sub newrecord {
   #
   # add a new record to an existing vault
   my($this, %fields) = @_;
-  my $record = new Crypt::PWSafe3::Record();
+  my $record = Crypt::PWSafe3::Record->new();
   foreach my $field (keys %fields) {
     $record->modifyfield($field, $fields{$field});
   }
@@ -599,17 +596,11 @@ sub readfield {
     return 0;
   }
 
-  #print "\n  raw: <" . unpack('H*', $data) . ">\n";
-
   $data = $this->decrypt($data);
-
-  #print "clear: <" . unpack('H*', $data) . ">\n";
 
   my $len  = unpack("L<", substr($data, 0, 4));
   my $type = unpack("C", substr($data, 4, 1));
   my $raw  = substr($data, 5);
-
-  #print "readfield: len: $len, type: $type\n";
 
   if ($len > 11) {
     my $step = int(($len+4) / 16);
@@ -623,10 +614,10 @@ sub readfield {
   }
   $raw = substr($raw, 0, $len);
   if ($header) {
-    return new Crypt::PWSafe3::HeaderField(type => $type, raw => $raw);
+    return Crypt::PWSafe3::HeaderField->new(type => $type, raw => $raw);
   }
   else {
-    return new Crypt::PWSafe3::Field(type => $type, raw => $raw);
+    return Crypt::PWSafe3::Field->new(type => $type, raw => $raw);
   }
 }
 
@@ -646,7 +637,7 @@ sub encrypt {
   my $raw = $this->{cipher}->encrypt($data);
   if (length($raw) > 16) {
     # we use only the last 16byte block as next iv
-    # if data is more than 1 blocks than Crypt::CBC
+    # if data is more than 1 blocks then Crypt::CBC
     # has already updated the iv for the inner blocks
     $raw = substr($raw, -16, 16);
   }
@@ -672,7 +663,6 @@ sub readbytes {
   my $got = $this->{fd}->sysread($buffer, $size);
   if ($got == $size) {
     $this->{sum} += $got;
-    #print "Got $got bytes (read so far: $this->{sum} bytes) $package line $line\n";
     return $buffer;
   }
   else {
@@ -698,7 +688,6 @@ sub getheader {
   #
   # return a header object
   my($this, $name) = @_;
-  #   $this->{header}->{ $field->name } = $field;
   if (exists  $this->{header}->{$name}) {
     return $this->{header}->{$name};
   }
@@ -717,7 +706,7 @@ Crypt::PWSafe3 - Read and write Passwordsafe v3 files
 =head1 SYNOPSIS
 
  use Crypt::PWSafe3;
- my $vault = new Crypt::PWSafe3(file => 'filename.psafe3', password => 'somesecret');
+ my $vault = Crypt::PWSafe3->new(file => 'filename.psafe3', password => 'somesecret');
  
  # fetch all database records
  my @records = $vault->getrecords();
@@ -764,7 +753,7 @@ Crypt::PWSafe3 - Read and write Passwordsafe v3 files
  print scalar localtime($vault->getheader('lastsavetime')->value());
 
  # add/replace a database header
- my $h = new Crypt::PWSafe3::HeaderField(name => 'savedonhost', value => 'localhost');
+ my $h = Crypt::PWSafe3::HeaderField->new(name => 'savedonhost', value => 'localhost');
  $vault->addheader($h);
 
 =head1 DESCRIPTION
@@ -780,11 +769,12 @@ http://passwordsafe.sf.net.
 The new() method creates a new Crypt::PWSafe3 object. Any parameters
 must be given as hash parameters.
 
- my $vault = new Crypt::PWSafe3(
+ my $vault = Crypt::PWSafe3->new(
                      file     => 'vault.psafe3',
                      password => 'secret',
                      whoami   => 'user1',
-                     program  => 'mypwtool v1'
+                     program  => 'mypwtool v1',
+                     create   => 0,   # or 1
  );
 
 Mandatory parameters:
@@ -819,6 +809,11 @@ Specifies which program saved the password safe file.
 If omitted, the content of the perl variable $0 will
 be used, which contains the name of the current running
 script.
+
+=item B<create>
+
+If set to 0, B<new()> will fail if the file doesn't exist,
+otherwise it will try to create it. Enabled by default.
 
 =back
 
@@ -882,6 +877,16 @@ The parameter hash may contain any valid record field
 type with according values. Refer to L<Crypt::PWSafe3::Record>
 for details about available fields.
 
+=head2 B<newrecord(parameter-hash)>
+
+Create a new record. The UUID of the record will be generated
+automatically. Refer to L<Crypt::PWSafe3::Record>
+for details about available fields.
+
+=head2 B<addrecord(Crypt::PWSafe3::Record object)>
+
+Add a record to the vault. The record must be an
+L<Crypt::PWSafe3::Record> object.
 
 =head2 B<deleterecord(uuid)>
 
@@ -970,7 +975,7 @@ License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.16.
+Crypt::PWSafe3 Version 1.17.
 
 =cut
 

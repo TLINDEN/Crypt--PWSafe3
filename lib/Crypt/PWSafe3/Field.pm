@@ -13,7 +13,7 @@ use Exporter ();
 use vars qw(@ISA @EXPORT);
 use utf8;
 
-$Crypt::PWSafe3::Field::VERSION = '1.05';
+$Crypt::PWSafe3::Field::VERSION = '1.06';
 
 %Crypt::PWSafe3::Field::map2type = (
 		uuid     => 0x01,
@@ -120,9 +120,6 @@ sub new {
     $self->{name} = $self->{type};
   }
 
-  #print "New Field of type $self->{name}\n";
-  #print "Field Value: $self->{value}\n";
-
   return $self;
 }
 
@@ -151,7 +148,7 @@ raw implementation and you normally don't have to cope with it.
 
 However, if you ever do, you can do it this way:
 
- my $field = new Crypt::PWSafe3::Field(
+ my $field = Crypt::PWSafe3::Field->new(
                                         value => 'testing',
                                         name  => 'title
                                       );

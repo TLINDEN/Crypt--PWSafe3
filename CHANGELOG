@@ -1,6 +1,21 @@
 NEXT:
 	added license to META
 
+	open tmpfiles with O_EXLOCK disabled (cpantesters)
+
+	added new parameter 'create', enabled by default,
+	which creates a new vault if enabled and dies otherwise.
+
+	enhanced unit tests to report if read/write of files fails.
+
+	added unit test to create a new vault
+
+	added POD for newrecord() and addrecord(), previously
+	missing.
+
+	replaced "new $perl::$object" with $perl::$object->new()
+	everywhere.
+
 1.16
 	re-licensed from artistic1 to artistic2 in order to be
 	compatible to fedora packaging. no code changes otherwise

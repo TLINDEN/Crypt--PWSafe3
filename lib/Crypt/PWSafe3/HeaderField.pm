@@ -13,7 +13,7 @@ use Exporter ();
 use vars qw(@ISA @EXPORT);
 use utf8;
 
-$Crypt::PWSafe3::HeaderField::VERSION = '1.04';
+$Crypt::PWSafe3::HeaderField::VERSION = '1.05';
 
 %Crypt::PWSafe3::HeaderField::map2name = (
 	    0x00 => "version",
@@ -135,7 +135,7 @@ Crypt::PWSafe3::HeaderField - represent a passwordsafe v3 header field.
  my $who = $vault->getheader('wholastsaved');
  print $who->value;
 
- my $h = new Crypt::PWSafe3::HeaderField(name => 'savedonhost',
+ my $h = Crypt::PWSafe3::HeaderField->new(name => 'savedonhost',
                                          value => 'localhost');
  $vault->addheader($h);
 
@@ -147,7 +147,7 @@ raw implementation and you normally don't have to cope with it.
 However, if you ever do, you can add/replace any field type
 this way:
 
- my $field = new Crypt::PWSafe3::HeaderField(
+ my $field = Crypt::PWSafe3::HeaderField->new(
                                         value => 'localhost',
                                         name  => 'savedonhost'
                                       );

@@ -12,9 +12,24 @@
 #
 
 use Data::Dumper;
-#use Test::More tests => 57;
-use Test::More qw(no_plan);
+use Test::More tests => 11;
+#use Test::More qw(no_plan);
 
+my %params = (create => 0, password => 'tom');
+
+my %record = (
+	      user   => 'u3',
+	      passwd => 'p3',
+	      group  => 'g3',
+	      title  => 't3',
+	      notes  => 'n3'
+	     );
+
+sub rdpw {
+  my $file = shift;
+  my $vault = Crypt::PWSafe3->new(file => $file, %params) or die "$!";
+  return $vault;
+}
 
 ### 1
 # load module
@@ -24,7 +39,7 @@ require_ok( 'Crypt::PWSafe3' );
 ### 2
 # open vault and read in all records
 eval {
-  my $vault = new Crypt::PWSafe3(file => 't/tom.psafe3', password => 'tom');
+  my $vault = &rdpw('t/tom.psafe3');
   my @r = $vault->getrecords;
   my $got = 0;
   foreach my $rec (@r) {
@@ -36,47 +51,67 @@ eval {
     die "No records found in test database";
   }
 };
-ok(!$@, "open a pwsafe3 database");
+ok(!$@, "open a pwsafe3 database ($@)");
+
+
+### 1a
+# create a new vault
+my %rdata1a;
+my $fd = File::Temp->new(TEMPLATE => '.myvaultXXXXXXXX', TMPDIR => 1, EXLOCK => 0) or die "Could not open tmpfile: $!\n";
+my $tmpfile = "$fd";
+close($fd);
+
+eval {
+  my $vault = Crypt::PWSafe3->new(file => $tmpfile, password => 'tom') or die "$!";
+  $vault->newrecord(%record);
+  $vault->save();
+};
+ok(!$@, "create a new pwsafe3 database ($@)");
+
+eval {
+  my $rvault1a = &rdpw($tmpfile);
+  my $rec1a = ($rvault1a->getrecords())[0];
+  foreach my $name (keys %record) {
+    $rdata1a{$name} = $rec1a->$name();
+  }
+};
+ok(!$@, "read created new pwsafe3 database ($@)");
+is_deeply(\%record, \%rdata1a, "Write record to a new pwsafe3 database");
+unlink($tmpfile);
 
 ### 3
 # modify an existing record
 my $uuid3;
 my %rdata3;
 my $rec3;
-my %data3 = (
-	     user   => 'u3',
-	     passwd => 'p3',
-	     group  => 'g3',
-	     title  => 't3',
-	     notes  => 'n3'
-	     );
+
 eval {
-  my $vault3 = new Crypt::PWSafe3(file => 't/tom.psafe3', password => 'tom');
+  my $vault3 = &rdpw('t/tom.psafe3');
   foreach my $uuid ($vault3->looprecord) {
     $uuid3 = $uuid;
-    $vault3->modifyrecord($uuid3, %data3);
+    $vault3->modifyrecord($uuid3, %record);
     last;
   }
   $vault3->save(file=>'t/3.out');
 
-  my $rvault3 = new Crypt::PWSafe3(file => 't/3.out', password => 'tom');
+  my $rvault3 = &rdpw('t/3.out');
   $rec3       = $rvault3->getrecord($uuid3);
-  
-  foreach my $name (keys %data3) {
+
+  foreach my $name (keys %record) {
     $rdata3{$name} = $rec3->$name();
   }
 };
 ok(!$@, "read a pwsafe3 database and change a record ($@)");
-is_deeply(\%data3, \%rdata3, "Change a record an check if changes persist after saving");
+is_deeply(\%record, \%rdata3, "Change a record an check if changes persist after saving");
 
 
 ### 4
 # re-use $rec3 and change it the oop way
 my $rec4;
 eval {
-  my $vault4 = new Crypt::PWSafe3(file => 't/3.out', password => 'tom');
+  my $vault4 = &rdpw('t/tom.psafe3');
   $rec4      = $vault4->getrecord($uuid3);
- 
+
   $rec4->user("u4");
   $rec4->passwd("p4");
 
@@ -84,7 +119,7 @@ eval {
   $vault4->markmodified();
   $vault4->save(file=>'t/4.out');
 
-  my $rvault4 = new Crypt::PWSafe3(file => 't/4.out', password => 'tom');
+  my $rvault4 = &rdpw('t/4.out');
   $rec4 = $rvault4->getrecord($uuid3);
   if ($rec4->user ne 'u4') {
     die "oop way record change failed";
@@ -95,7 +130,7 @@ ok(!$@, "re-use record and change it the oop way\n" . $@ . "\n");
 
 ### 5 modify some header fields
 eval {
-  my $vault5 = new Crypt::PWSafe3(file => 't/tom.psafe3', password => 'tom');
+  my $vault5 = &rdpw('t/tom.psafe3');
 
   my $h3 = new Crypt::PWSafe3::HeaderField(name => 'savedonhost', value => 'localhost');
 
@@ -103,7 +138,7 @@ eval {
   $vault5->markmodified();
   $vault5->save(file=>'t/5.out');
 
-  my $rvault5 = new Crypt::PWSafe3(file => 't/5.out', password => 'tom');
+  my $rvault5 = &rdpw('t/5.out');
 
   if ($rvault5->getheader('savedonhost')->value() ne 'localhost') {
     die "header savedonhost not correct";
@@ -113,11 +148,11 @@ ok(!$@, "modify some header fields ($@)");
 
 ### 6 delete
 eval {
-  my $vault6 = new Crypt::PWSafe3(file => 't/3.out', password => 'tom');
+  my $vault6 = &rdpw('t/3.out');
   my $uuid      = $vault6->newrecord(user => 'xxx', passwd => 'y');
   $vault6->save(file=>'t/6.out');
 
-  my $rvault6 = new Crypt::PWSafe3(file => 't/6.out', password => 'tom');
+  my $rvault6 = &rdpw('t/6.out');
   my $rec = $rvault6->getrecord($uuid);
   if ($rec->user ne 'xxx') {
     die "oop way record change failed";
@@ -127,8 +162,8 @@ eval {
       die "deleted record still present in open vault";
   }
   $vault6->save(file=>'t/6a.out');
-  
-  my $rvault6a = new Crypt::PWSafe3(file => 't/6a.out', password => 'tom');
+
+  my $rvault6a = &rdpw('t/6a.out');
   if ($rvault6->getrecord($uuid)) {
       die "deleted record reappears after save and reload";
   }

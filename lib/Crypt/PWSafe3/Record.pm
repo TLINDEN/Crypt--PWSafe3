@@ -15,7 +15,7 @@ my %map2type = %Crypt::PWSafe3::Field::map2type;
 
 my %map2name = %Crypt::PWSafe3::Field::map2name;
 
-$Crypt::PWSafe3::Record::VERSION = '1.08';
+$Crypt::PWSafe3::Record::VERSION = '1.09';
 
 foreach my $field (keys %map2type ) {
   eval  qq(
@@ -46,50 +46,50 @@ sub new {
 
   my $time = time;
 
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'uuid',
-					    raw   => $newuuid,
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'uuid',
+					     raw   => $newuuid,
+					    ));
+
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'ctime',
+					     value => $time,
+					    ));
+
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'mtime',
+					     value => $time
+					    ));
+
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'lastmod',
+					     value => $time
+					    ));
+
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'passwd',
+					     value => ''
+					    ));
+
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'user',
+					     value => ''
 					   ));
 
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'ctime',
-					    value => $time,
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'title',
+					     value => ''
 					   ));
 
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'mtime',
-					    value => $time
-					   ));
-  
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'lastmod',
-					    value => $time
-					   ));
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'notes',
+					     value => ''
+					    ));
 
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'passwd',
-					    value => ''
-					   ));
-
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'user',
-					    value => ''
-					   ));
-
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'title',
-					    value => ''
-					   ));
-
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'notes',
-					    value => ''
-					   ));
-
-  $self->addfield(new Crypt::PWSafe3::Field(
-					    name  => 'group',
-					    value => ''
-					   ));
+  $self->addfield(Crypt::PWSafe3::Field->new(
+					     name  => 'group',
+					     value => ''
+					    ));
 
   return $self;
 }
@@ -100,7 +100,7 @@ sub modifyfield {
   my($this, $name, $value) = @_;
   if (exists $map2type{$name}) {
     my $type = $map2type{$name};
-    my $field = new  Crypt::PWSafe3::Field(
+    my $field = Crypt::PWSafe3::Field->new(
 					   type => $type,
 					   value => $value
 					  );
@@ -114,15 +114,15 @@ sub modifyfield {
     $this->addfield($field);
 
     # mark the field as modified if it's passwd field
-    $this->addfield(new Crypt::PWSafe3::Field(
-					      name => 'mtime',
-					      value => $time
-					     )) if $name eq 'passwd';
+    $this->addfield(Crypt::PWSafe3::Field->new(
+					       name => 'mtime',
+					       value => $time
+					      )) if $name eq 'passwd';
 
-    $this->addfield(new Crypt::PWSafe3::Field(
-					      name  => "lastmod",
-					      value => $time
-					     ));
+    $this->addfield(Crypt::PWSafe3::Field->new(
+					       name  => "lastmod",
+					       value => $time
+					      ));
     return $field;
   }
   else {
@@ -134,7 +134,7 @@ sub genuuid {
   #
   # generate a v4 uuid string
   my($this) = @_;
-  my $ug    = new Data::UUID;
+  my $ug    = Data::UUID->new();
   my $uuid  = $ug->create();
   return $uuid;
 }
