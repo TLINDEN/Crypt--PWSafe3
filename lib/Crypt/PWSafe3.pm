@@ -22,7 +22,6 @@ use Digest::SHA;
 use Crypt::Random qw( makerandom );
 use Data::UUID;
 use File::Copy qw(copy move);
-#use File::Spec;
 use File::Temp;
 use FileHandle;
 use Data::Dumper;
@@ -176,7 +175,6 @@ sub create {
 
   # encrypt b1 .. b4
   my $crypt = Crypt::ECB->new;
-  #$crypt->padding(PADDING_AUTO);
   $crypt->cipher('Twofish');
   $crypt->key( $this->strechedpw() );
   $this->b1( $crypt->encrypt( $this->random(16) ) );

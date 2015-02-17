@@ -1,4 +1,4 @@
-NEXT:
+1.17:
 	added license to META
 
 	open tmpfiles with O_EXLOCK disabled (cpantesters)
@@ -15,6 +15,10 @@ NEXT:
 
 	replaced "new $perl::$object" with $perl::$object->new()
 	everywhere.
+
+	using weak random source for unit tests to avoid blocking
+	/dev/random on cpantesters systems with heavy entropy
+	load.
 
 1.16
 	re-licensed from artistic1 to artistic2 in order to be

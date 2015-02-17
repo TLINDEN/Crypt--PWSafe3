@@ -15,6 +15,7 @@ use Data::Dumper;
 use Test::More tests => 11;
 #use Test::More qw(no_plan);
 
+
 my %params = (create => 0, password => 'tom');
 
 my %record = (
@@ -24,6 +25,8 @@ my %record = (
 	      title  => 't3',
 	      notes  => 'n3'
 	     );
+
+
 
 sub rdpw {
   my $file = shift;
@@ -35,6 +38,18 @@ sub rdpw {
 # load module
 BEGIN { use_ok "Crypt::PWSafe3"};
 require_ok( 'Crypt::PWSafe3' );
+
+# I'm going to replace the secure random number generator
+# backends with this very primitive and insecure one, because
+# these are only unit tests and because we use external modules
+# for the purpose anyway (which are not to be tested with these
+# unit tests).
+# This has to be done, so that unit tests running on cpantesters
+# don't block if we use a real random source, which has reportedly
+# happened in the past.
+# ***** CAUTION: DO NOT USE THIS CODE IN PRODUCTION. EVER. ****
+*Crypt::PWSafe3::random  = sub { return join'',map{chr(int(rand(255)))}(1..$_[1]); };
+
 
 ### 2
 # open vault and read in all records
@@ -62,7 +77,7 @@ my $tmpfile = "$fd";
 close($fd);
 
 eval {
-  my $vault = Crypt::PWSafe3->new(file => $tmpfile, password => 'tom') or die "$!";
+  my $vault = Crypt::PWSafe3->new(file => $tmpfile, password => 'tom', random => $trand) or die "$!";
   $vault->newrecord(%record);
   $vault->save();
 };
