@@ -28,7 +28,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.17';
+$Crypt::PWSafe3::VERSION = '1.18';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -298,7 +298,7 @@ sub read {
   $this->hmac( $this->readbytes(32) );
   my $calcmac = $this->{hmacer}->digest();
   if ($calcmac ne $this->hmac) {
-    croak "File integrity check failed";
+    croak "File integrity check failed, invalid HMAC";
   }
 
   $this->{fd}->close();
