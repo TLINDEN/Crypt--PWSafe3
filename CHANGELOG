@@ -1,4 +1,6 @@
-NEXT:
+1.19:
+	applied patch by David Dick, which adds some more precautions
+	of i/o error handling and flushing.
 	
 1.17:
 	added license to META

@@ -11,6 +11,8 @@ package Crypt::PWSafe3;
 
 use strict;
 
+use Config;
+
 use Carp::Heavy;
 use Carp;
 
@@ -28,7 +30,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.18';
+$Crypt::PWSafe3::VERSION = '1.19';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -211,7 +213,8 @@ sub read {
   # read and decrypt an existing vault file
   my($this) = @_;
 
-  my $fd = FileHandle->new($this->file, 'r');
+  my $file = $this->file();
+  my $fd = FileHandle->new($file, 'r') or croak "Could not open $file for reading: $!";
   $fd->binmode();
   $this->{fd} = $fd;
 
@@ -301,7 +304,7 @@ sub read {
     croak "File integrity check failed, invalid HMAC";
   }
 
-  $this->{fd}->close();
+  $this->{fd}->close() or croak "Could not close $file: $!";
 }
 
 sub untaint {
@@ -416,7 +419,10 @@ sub save {
 
   $this->hmac( $this->{hmacer}->digest() );
   $this->writebytes($this->hmac);
-  $this->{fd}->close();
+  if ($Config{d_fsync}) {
+    $this->{fd}->sync() or croak "Could not fsync: $!";
+  }
+  $this->{fd}->close() or croak "Could not close tmpfile: $!";
 
   # now try to read it in again to check if it
   # is valid what we created
@@ -429,7 +435,7 @@ sub save {
   }
   else {
     # well, seems to be ok :)
-    move($tmpfile, $file);
+    move($tmpfile, $file) or croak "Could not move $tmpfile to $file: $!";
   }
 }
 
@@ -973,7 +979,7 @@ License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.17.
+Crypt::PWSafe3 Version 1.19.
 
 =cut
 
