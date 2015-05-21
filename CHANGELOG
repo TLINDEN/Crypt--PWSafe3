@@ -1,3 +1,8 @@
+NEXT:	Records created by Crypt::PWSafe3 (eg. the ones fetched
+	with getrecords) are now associated with the parent
+	object, so that you can modify them directly and call
+	$vault->save afterwards without using $vault->modifyrecord.
+
 1.21:
 	forgot to load File::Spec
 	

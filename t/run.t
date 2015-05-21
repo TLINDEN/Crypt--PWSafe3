@@ -12,7 +12,7 @@
 #
 
 use Data::Dumper;
-use Test::More tests => 11;
+use Test::More tests => 13;
 #use Test::More qw(no_plan);
 
 
@@ -39,17 +39,19 @@ sub rdpw {
 BEGIN { use_ok "Crypt::PWSafe3"};
 require_ok( 'Crypt::PWSafe3' );
 
-# I'm going to replace the secure random number generator
-# backends with this very primitive and insecure one, because
-# these are only unit tests and because we use external modules
-# for the purpose anyway (which are not to be tested with these
-# unit tests).
-# This has to be done, so that unit tests running on cpantesters
-# don't block if we use a real random source, which has reportedly
-# happened in the past.
-# ***** CAUTION: DO NOT USE THIS CODE IN PRODUCTION. EVER. ****
-*Crypt::PWSafe3::random  = sub { return join'',map{chr(int(rand(255)))}(1..$_[1]); };
-
+{
+  # I'm going to replace the secure random number generator
+  # backends with this very primitive and insecure one, because
+  # these are only unit tests and because we use external modules
+  # for the purpose anyway (which are not to be tested with these
+  # unit tests).
+  # This has to be done so that unit tests running on cpantesters
+  # don't block if we use a real (and exhausted) random source,
+  # which has reportedly happened in the past.
+  # ***** CAUTION: DO NOT USE THIS CODE IN PRODUCTION. EVER. ****
+  no warnings 'redefine';
+  *Crypt::PWSafe3::random  = sub { return join'',map{chr(int(rand(255)))}(1..$_[1]); };
+};
 
 ### 2
 # open vault and read in all records
@@ -77,7 +79,7 @@ my $tmpfile = "$fd";
 close($fd);
 
 eval {
-  my $vault = Crypt::PWSafe3->new(file => $tmpfile, password => 'tom', random => $trand) or die "$!";
+  my $vault = Crypt::PWSafe3->new(file => $tmpfile, password => 'tom') or die "$!";
   $vault->newrecord(%record);
   $vault->save();
 };
@@ -116,8 +118,30 @@ eval {
     $rdata3{$name} = $rec3->$name();
   }
 };
-ok(!$@, "read a pwsafe3 database and change a record ($@)");
-is_deeply(\%record, \%rdata3, "Change a record an check if changes persist after saving");
+ok(!$@, "read a pwsafe3 database and change a record, traditional method ($@)");
+is_deeply(\%record, \%rdata3, "Change a record an check if changes persist after saving, traditional method");
+diag("3 done\n");
+
+### 3a
+# modify an existing record, new method
+my $uuid3a;
+my %rdata3a;
+my $rec3a;
+
+eval {
+  my $vault3a = &rdpw('t/tom.psafe3');
+  foreach my $rec ($vault3a->getrecords) {
+    $rec->notes('n3a');
+    $uuid3a = $rec->uuid;
+    last;
+  }
+  $vault3a->save(file=>'t/3a.out');
+
+  my $rvault3a = &rdpw('t/3a.out');
+  $rec3a       = $rvault3a->getrecord($uuid3a);
+};
+ok(!$@, "read a pwsafe3 database and change a record, new method ($@)");
+is_deeply($rec3a->notes, 'n3a', "Change a record an check if changes persist after saving, new method");
 
 
 ### 4

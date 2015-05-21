@@ -31,7 +31,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.21';
+$Crypt::PWSafe3::VERSION = '1.22';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -281,7 +281,7 @@ sub read {
   }
 
   # read db records
-  my $record = Crypt::PWSafe3::Record->new();
+  my $record = Crypt::PWSafe3::Record->new(super => $this);
   $this->{record} = {};
   while (1) {
     my $field = $this->readfield();
@@ -290,7 +290,7 @@ sub read {
     }
     if ($field->type == 0xff) {
       $this->addrecord($record);
-      $record = Crypt::PWSafe3::Record->new();
+      $record = Crypt::PWSafe3::Record->new(super => $this);
     }
     else {
       $record->addfield($field);
@@ -589,6 +589,7 @@ sub newrecord {
   }
   $this->markmodified();
   $this->addrecord($record);
+  $this->{records}->{$record->uuid}->{super} = $this;
   return $record->uuid;
 }
 
@@ -859,16 +860,21 @@ which is a unique identifier. You can access the uuid by:
 Accessing other record properties works the same. For
 more details, refer to L<Crypt::PWSafe3::Record>.
 
-Please note that record objects accessed this way are
-copies. If you change such a record object and save the
-database, nothing will in fact change. In this case you
-need to put the changed record back into the record
-list of the Crypt::PWSafe3 object by:
+B<Note>: record objects returned by getrecords() are
+still associated with the L<Crypt::PWSafe3> object. So,
+if you modify a field of such a record, the change will
+be populated back into the vault. Of course you'd still
+need to save it.
 
- $vault->addrecord($record):
+Sample:
 
-See section L<addrecord()> for more details on this.
+ foreach my $rec ($vault->getrecords) {
+   $rec->note('blah fasel');
+ }
+ $vault->save();
 
+However, it's also possible to use the B<modifyrecord()>
+method, see below.
 
 =head2 B<looprecord()>
 
@@ -998,7 +1004,7 @@ License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.21.
+Crypt::PWSafe3 Version 1.22.
 
 =cut
 

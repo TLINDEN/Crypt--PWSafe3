@@ -15,7 +15,7 @@ my %map2type = %Crypt::PWSafe3::Field::map2type;
 
 my %map2name = %Crypt::PWSafe3::Field::map2name;
 
-$Crypt::PWSafe3::Record::VERSION = '1.09';
+$Crypt::PWSafe3::Record::VERSION = '1.10';
 
 foreach my $field (keys %map2type ) {
   eval  qq(
@@ -34,9 +34,9 @@ foreach my $field (keys %map2type ) {
 sub new {
   #
   # new record object
-  my($this) = @_;
+  my($this, %param) = @_;
   my $class = ref($this) || $this;
-  my $self = { };
+  my $self = \%param;
   bless($self, $class);
   $self->{field} = ();
 
@@ -123,6 +123,35 @@ sub modifyfield {
 					       name  => "lastmod",
 					       value => $time
 					      ));
+
+    my ($package, $filename, $line, $subroutine, @ignore) = caller(1);
+
+    # this looks a little bit weird but it's a cool feat.
+    # 'super' contains the vault object (of class Crypt::PWSafe3),
+    # which initially called our new() method, so we know to which
+    # vault we belong.
+    # therefore, if the user just calls $record->passwd('newpw'),
+    # then we can update the record directly on the vault object,
+    # so that the user doesn't have to call modifyrecord. this is
+    # especially usefull inside a loop.
+    # also note, that the 'super' parameter to Crypt::PWSafe3::Record::new()
+    # is not documented, so it's an internal parameter not to be used
+    # by users. however, maybe in the future it would be useful to
+    # have it populated so that if a user has a function which takes a
+    # record as parameter, then in this function he could access the
+    # vault as well. maybe.
+    #
+    # Thu May 21 10:04:15 CEST 2015 tlinden\@cpan.org
+    if (exists $this->{super} &&
+	"${package}::${subroutine}" !~ /Crypt::PWSafe3::modifyrecord$/ &&
+       	"${package}::${subroutine}" !~ /Crypt::PWSafe3::newrecord$/ &&
+ 	"${package}::${subroutine}" !~ /Crypt::PWSafe3::Record::modifyfield$/
+       ) {
+      # we've been called from the outside (the user in fact) and
+      # we're attached to a vault, so update ourselfes there as well
+      $this->{super}->modifyrecord($this->uuid, $name, $value);
+    }
+
     return $field;
   }
   else {
@@ -188,6 +217,12 @@ fields.
 It is also possible to access the raw unencoded values of the fields
 by accessing them directly, refer to L<Crypt::PWSafe3::Field> for more
 details on this.
+
+If the record object has been created by L<Crypt::PWSafe3> (and fetched with
+Crypt::PWSafe3::getrecord), then it's still associated with the L<Crypt::PWSafe3>
+parent object. Changes to the record will therefore automatically populated
+back into the parent object (the vault). This is not the case if you created
+the record object yourself.
 
 =head1 METHODS
 

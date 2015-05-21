@@ -41,7 +41,8 @@ Passwd: %s
  Notes: %s
 ), $rec->uuid, $rec->user, $rec->passwd, $rec->group, $rec->title, $rec->notes;
 
-    $vault->modifyrecord($rec->uuid, notes => scalar localtime(time));
+    $rec->notes( scalar localtime(time));
+#    $vault->modifyrecord($rec->uuid, notes => scalar localtime(time));
   }
 
   $vault->save;
