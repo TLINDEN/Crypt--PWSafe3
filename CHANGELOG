@@ -1,3 +1,6 @@
+1.21:
+	forgot to load File::Spec
+	
 1.20:
 	applied another patch by David Dick: writing tmp files in
 	the same directory where the vault file resides (unless it's

@@ -25,12 +25,13 @@ use Crypt::Random qw( makerandom );
 use Data::UUID;
 use File::Copy qw(copy move);
 use File::Temp;
+use File::Spec;
 use FileHandle;
 use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.20';
+$Crypt::PWSafe3::VERSION = '1.21';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -997,7 +998,7 @@ License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.20.
+Crypt::PWSafe3 Version 1.21.
 
 =cut
 
