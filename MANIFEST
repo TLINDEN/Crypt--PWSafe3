@@ -11,3 +11,4 @@ README
 t/run.t
 t/tom.psafe3
 CHANGELOG
+sample/test.pl
