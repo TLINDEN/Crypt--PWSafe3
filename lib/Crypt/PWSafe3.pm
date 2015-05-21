@@ -30,7 +30,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.19';
+$Crypt::PWSafe3::VERSION = '1.20';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -350,7 +350,25 @@ sub save {
   $this->addheader($whatsaved);
   $this->addheader($whosaved);
 
-  my $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', TMPDIR => 1, EXLOCK => 0) or croak "Could not open tmpfile: $!\n";
+  # open a temp vault file, first we try it in the same directory as the target vault file
+  my $tmpdir;
+  if (File::Spec->file_name_is_absolute($file)) {
+    my ($volume, $directories, undef) = File::Spec->splitpath($file);
+    $tmpdir = File::Spec->catdir($volume, $directories);
+  }
+  else {
+    my ($volume, $directories, undef) = File::Spec->splitpath(File::Spec->rel2abs($file));
+    $tmpdir = File::Spec->abs2rel(File::Spec->catdir($volume, $directories));
+  }
+
+  my $fd;
+  if (-w $tmpdir) {
+    $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', DIR => $tmpdir, EXLOCK => 0) or croak "Could not open tmpfile: $!\n";
+  }
+  else {
+    # well, then we'll use one in the tmp dir of the system
+    $fd = File::Temp->new(TEMPLATE => '.vaultXXXXXXXX', TMPDIR => 1, EXLOCK => 0) or croak "Could not open tmpfile: $!\n";
+  }
   my $tmpfile = "$fd";
 
   $this->{fd} = $fd;
@@ -979,7 +997,7 @@ License 2.0, see: L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 VERSION
 
-Crypt::PWSafe3 Version 1.19.
+Crypt::PWSafe3 Version 1.20.
 
 =cut
 

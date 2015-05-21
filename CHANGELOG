@@ -1,3 +1,8 @@
+1.20:
+	applied another patch by David Dick: writing tmp files in
+	the same directory where the vault file resides (unless it's
+	not writable).
+
 1.19:
 	applied patch by David Dick, which adds some more precautions
 	of i/o error handling and flushing.
