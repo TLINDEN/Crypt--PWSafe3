@@ -3,9 +3,12 @@ NEXT:	Records created by Crypt::PWSafe3 (eg. the ones fetched
 	object, so that you can modify them directly and call
 	$vault->save afterwards without using $vault->modifyrecord.
 
+        erase passwd from memory using zeros instead of
+        random bytes. fixes github#9.
+
 1.21:
 	forgot to load File::Spec
-	
+
 1.20:
 	applied another patch by David Dick: writing tmp files in
 	the same directory where the vault file resides (unless it's
@@ -14,7 +17,7 @@ NEXT:	Records created by Crypt::PWSafe3 (eg. the ones fetched
 1.19:
 	applied patch by David Dick, which adds some more precautions
 	of i/o error handling and flushing.
-	
+
 1.17:
 	added license to META
 

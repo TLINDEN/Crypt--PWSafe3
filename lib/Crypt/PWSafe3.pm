@@ -153,7 +153,7 @@ sub stretchpw {
     $sha->add( ( $stretched) );
     $stretched = $sha->digest();
   }
-  $passwd = $this->random(64);
+  $passwd = 0 x 64;
   return $stretched;
 }
 
