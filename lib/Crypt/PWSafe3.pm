@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2011-2015 T.v.Dein <tlinden |AT| cpan.org>.
+# Copyright (c) 2011-2016 T.v.Dein <tlinden |AT| cpan.org>.
 #
 # Licensed under the terms of the Artistic License 2.0
 # see: http://www.perlfoundation.org/artistic_license_2_0
@@ -178,6 +178,7 @@ sub create {
 
   # encrypt b1 .. b4
   my $crypt = Crypt::ECB->new;
+  $crypt->padding('none');
   $crypt->cipher('Twofish');
   $crypt->key( $this->strechedpw() );
   $this->b1( $crypt->encrypt( $this->random(16) ) );
@@ -245,6 +246,7 @@ sub read {
   $this->b4( $this->readbytes(16) );
 
   my $crypt = Crypt::ECB->new;
+  $crypt->padding('none');
   $crypt->cipher('Twofish') || die $crypt->errstring;
   $crypt->key( $this->strechedpw() );
 
@@ -393,6 +395,7 @@ sub save {
   $this->writebytes($this->b4);
 
   my $crypt = Crypt::ECB->new;
+  $crypt->padding('none');
   $crypt->cipher('Twofish');
   $crypt->key( $this->strechedpw() );
 
@@ -994,7 +997,7 @@ in this module are his ideas ported to perl.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2015 by T.v.Dein <tlinden@cpan.org>.
+Copyright (c) 2011-2016 by T.v.Dein <tlinden@cpan.org>.
 
 =head1 LICENSE
 
