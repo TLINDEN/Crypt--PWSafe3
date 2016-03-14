@@ -1,10 +1,17 @@
-NEXT:	Records created by Crypt::PWSafe3 (eg. the ones fetched
+1.22:	Records created by Crypt::PWSafe3 (eg. the ones fetched
 	with getrecords) are now associated with the parent
 	object, so that you can modify them directly and call
 	$vault->save afterwards without using $vault->modifyrecord.
 
-        erase passwd from memory using zeros instead of
+        Erase passwd from memory using zeros instead of
         random bytes. fixes github#9.
+
+	Fixed rt.cpan.org#112975: Crypt::ECB (which we use) have been
+	reworked and among other issues it fixed handline of padding.
+	PWSafe3.pm did not specify a padding scheme (because it doesn't
+	use it) and therefore Crypt::ECB enforced a default scheme
+	which lead to an invalid key size. Now we specify explicitly
+	padding:none, as suggested by Christoph Appel.
 
 1.21:
 	forgot to load File::Spec

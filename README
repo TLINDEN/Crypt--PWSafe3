@@ -32,7 +32,7 @@ INSTALLATION
 
 COPYRIGHT
        Crypt::PWSafe3
-           Copyright (c) 2011-2015 by T.v.Dein <tlinden@cpan.org>
+           Copyright (c) 2011-2016 by T.v.Dein <tlinden@cpan.org>
 
 LICENSE
 
@@ -52,5 +52,5 @@ AUTHOR
 
 
 VERSION
-        1.20
+        1.22
 
