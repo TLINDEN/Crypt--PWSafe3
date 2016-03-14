@@ -20,7 +20,7 @@ foreach my $module (sort keys %optional) {
 }
 
 
-WriteMakefile(
+my %params = (
 	      'NAME'         => 'Crypt::PWSafe3',
 	      'VERSION_FROM' => 'lib/Crypt/PWSafe3.pm',
 	      'PREREQ_PM'    => { 'Digest::HMAC'   => 1.00,
@@ -38,6 +38,17 @@ WriteMakefile(
 				 FILES                   => 't/*.out *~ */*~ */*/*~ */*/*/*~'
 				},
 		($ExtUtils::MakeMaker::VERSION >= 6.3002 ? ('LICENSE'  => 'perl', ) : ()),
-
 );
 
+if ( $ExtUtils::MakeMaker::VERSION ge '6.46' ) {
+    $params{META_MERGE} = {
+        resources => {
+            homepage    => 'http://www.daemon.de/',
+            bugtracker  => 'http://github.com/tlinden/Crypt--PWSafe3',
+            license     => 'http://www.perlfoundation.org/artistic_license_2_0',
+            repository  => 'git://github.com/tlinden/Crypt--PWSafe3.git',
+        }
+    };
+}
+
+WriteMakefile( %params );
