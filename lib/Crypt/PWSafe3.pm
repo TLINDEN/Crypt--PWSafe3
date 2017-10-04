@@ -58,9 +58,8 @@ BEGIN {
     }
     else {
       *Crypt::PWSafe3::random = sub {
-	my($this, $len) = @_;
-	my $bits = makerandom(Size => 256, Strength => 1);
-	return substr($bits, 0, $len);
+        my($this, $len) = @_;
+        return makerandom(Size => $len * 8, Strength => 1, Uniform => 1);
       };
     }
   }
