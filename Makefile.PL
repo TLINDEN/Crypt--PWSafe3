@@ -28,7 +28,6 @@ my %params = (
 				  'Crypt::CBC'     => 2.30,
 				  'Crypt::ECB'     => 1.45,
 				  'Crypt::Twofish' => 2.14,
-				  'Crypt::Random'  => 1.25,
 				  'Data::UUID'     => 1.217,
 				  'Shell'          => 0.5,
 				  'File::Temp'     => 0,
@@ -39,6 +38,14 @@ my %params = (
 				},
 		($ExtUtils::MakeMaker::VERSION >= 6.3002 ? ('LICENSE'  => 'perl', ) : ()),
 );
+
+# Already tried requiring Bytes::Random::Secure earlier, so now check the version
+# and if it's OK, add a dependency on it; otherwise, fall back to Crypt::Random
+if (eval { Bytes::Random::Secure->VERSION('0.09') }) {
+    $params{'PREREQ_PM'}{'Bytes::Random::Secure'} = 0.09;
+} else {
+    $params{'PREREQ_PM'}{'Crypt::Random'} = 1.25;
+};
 
 if ( $ExtUtils::MakeMaker::VERSION ge '6.46' ) {
     $params{META_MERGE} = {
