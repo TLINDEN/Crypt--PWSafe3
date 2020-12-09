@@ -21,7 +21,6 @@ use Crypt::ECB;
 use Crypt::Twofish;
 use Digest::HMAC;
 use Digest::SHA;
-use Crypt::Random qw( makerandom );
 use Data::UUID;
 use File::Copy qw(copy move);
 use File::Temp;
