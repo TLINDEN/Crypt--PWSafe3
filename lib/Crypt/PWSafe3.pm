@@ -263,7 +263,7 @@ sub read {
 				   -padding => 'null',
 				   -literal_key => 1,
 				   -keysize => 32,
-				   -blocksize => 16
+				   #-blocksize => 16
 				  );
 
   # read db header fields
