@@ -30,7 +30,7 @@ use Data::Dumper;
 use Exporter ();
 use vars qw(@ISA @EXPORT);
 
-$Crypt::PWSafe3::VERSION = '1.22';
+$Crypt::PWSafe3::VERSION = '1.23';
 
 use Crypt::PWSafe3::Field;
 use Crypt::PWSafe3::HeaderField;
@@ -198,10 +198,9 @@ sub create {
 				    -iv     => $this->iv,
 				    -cipher => 'Twofish',
 				    -header => 'none',
-				    -padding => 'null',
+				    -padding => 'rijndael_compat',
 				    -literal_key => 1,
 				    -keysize => 32,
-				    -blocksize => 16
 				   );
 
   # empty for now
@@ -260,10 +259,9 @@ sub read {
 				   -iv     => $this->iv,
 				   -cipher => 'Twofish',
 				   -header => 'none',
-				   -padding => 'null',
+				   -padding => 'rijndael_compat',
 				   -literal_key => 1,
 				   -keysize => 32,
-				   #-blocksize => 16
 				  );
 
   # read db header fields
@@ -408,10 +406,9 @@ sub save {
 				   -iv     => $this->iv,
 				   -cipher => 'Twofish',
 				   -header => 'none',
-				   -padding => 'null',
+				   -padding => 'rijndael_compat',
 				   -literal_key => 1,
 				   -keysize => 32,
-				   -blocksize => 16
 				  );
 
   my $eof = Crypt::PWSafe3::HeaderField->new(type => 0xff, value => '');
